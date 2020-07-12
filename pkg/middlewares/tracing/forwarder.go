@@ -50,6 +50,7 @@ func (f *forwarderMiddleware) ServeHTTP(rw http.ResponseWriter, req *http.Reques
 	span.SetTag("http.host", req.Host)
 
 	tracing.InjectRequestHeaders(req)
+	tracing.InjectResponseHeaders(rw, req)
 
 	recorder := newStatusCodeRecoder(rw, 200)
 

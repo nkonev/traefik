@@ -141,6 +141,18 @@ func InjectRequestHeaders(r *http.Request) {
 	}
 }
 
+func InjectResponseHeaders(rw http.ResponseWriter, r *http.Request) {
+	if span := GetSpan(r); span != nil {
+		err := opentracing.GlobalTracer().Inject(
+			span.Context(),
+			opentracing.HTTPHeaders,
+			opentracing.HTTPHeadersCarrier(rw.Header()))
+		if err != nil {
+			log.FromContext(r.Context()).Error(err)
+		}
+	}
+}
+
 // LogEventf logs an event to the span in the request context.
 func LogEventf(r *http.Request, format string, args ...interface{}) {
 	if span := GetSpan(r); span != nil {
